@@ -2,7 +2,10 @@ import pandas as pd
 import glob
 import json
 import numpy as np
+from tqdm import tqdm
 
+
+# Template pour les soucis d'encodage
 dict = {
     '\\u00e0': 'a',
     '\\u00e2': 'a',
@@ -63,28 +66,45 @@ dict = {
     '\r': ''
 }
 
+
+
 def cleanData(text, dict):
+    '''
+    Permet de nettoyer nos donnees
+    :param text: une phrase
+    :param dict: un dictionnaire de remplacement de donnees
+    :return:
+    '''
     for i, j in dict.items():
         text = text.replace(i, j)
     return text
 
+
 def mergeAllTweet():
-    twitterFile = glob.glob('dataset\\negatif\\*')
+    '''
+    Permet de merge l'ensemble des tweets positif et negatif dans un fichier unique
+    :return:
+    '''
+    twitterFile = glob.glob('D:\\DeeplyLearning\\Github\\data\\dataset\\positif\\*')
     col_names = ['text', 'result']
     allData = pd.DataFrame(columns=col_names)
 
 
 
-    for file in twitterFile:
+    for file in tqdm(twitterFile):
         fileOpened = open(file, 'r').read()
         jsonLine = json.loads(fileOpened)
         cleanString = cleanData(jsonLine['text'], dict)
-        allData = allData.append(pd.DataFrame({'text': cleanString, 'result': 1}, index=[0]))
+        allData = allData.append(pd.DataFrame({'text': cleanString, 'result': 0}, index=[0]))
 
-    allData.to_csv('dataset.txt', header=None, index=None, sep=',', mode='w')
+    allData.to_csv('data.txt', header=None, index=None, sep=',', mode='a')
 
 
 def cleanDuplicateData():
+    '''
+    Permet de supprimer les donnees en double
+    :return:
+    '''
     data = pd.read_csv('data.txt', sep=",", header=None)
     data.columns = ["text", "result"]
     print(data.shape)
@@ -96,7 +116,7 @@ def cleanDuplicateData():
     #file = open('data.txt', 'w')
     #file.close()
     print(df2.shape)
-    df2.to_csv('cleanData.txt', header=None, index=None, sep=',', mode='w')
+    df2.to_csv('cleanData.txt', header=None, index=None, sep=',', mode='a')
 
 
 if __name__ == "__main__":
