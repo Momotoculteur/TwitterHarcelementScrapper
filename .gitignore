@@ -2,3 +2,5 @@ Data/
 pyenv/
 Toolbox/dataset/
 *.pyc
+
+\.idea/
